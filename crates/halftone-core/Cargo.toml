@@ -1,0 +1,16 @@
+[package]
+name = "halftone-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Halftone conversion engine: images and 3D meshes to vector SVG"
+
+[dependencies]
+glam.workspace = true
+image.workspace = true
+rayon.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tobj.workspace = true
+toml.workspace = true
