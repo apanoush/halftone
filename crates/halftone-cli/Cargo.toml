@@ -5,6 +5,14 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 description = "Command line interface for the halftone engine"
+repository="https://github.com/apanoush/halftone"
+authors= ["aa-p"]
+
+[package.metadata.wix]
+upgrade-guid = "C6F15B46-A031-4048-9488-BEAA729332A6"
+path-guid = "533F1C27-F667-472A-B9DC-E9DA2D5A3D8C"
+license = false
+eula = false
 
 [[bin]]
 name = "halftone"
