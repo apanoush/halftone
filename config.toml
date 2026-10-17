@@ -1,34 +1,94 @@
-# Halftone configuration.
-#
-# A preset is applied field by field over the built-in defaults, so you only
-# need to specify what differs. Run `halftone preset list` to see everything
-# that ships with the application.
-
 default_preset = "classic"
 
-# Heavier ink with more contrast.
-[presets.bold]
-style = "dots"
-cell_size = 8.0
-angle = 45.0
-contrast = 1.25
+[presets.bayer]
+style = "ordered"
+cell_size = 4.0
+bayer_size = 8
 
-# Blue line work, useful for technical illustrations.
 [presets.blueprint]
 style = "lines"
 cell_size = 5.0
 angle = 0.0
 foreground = "#1b4f9c"
 
-# Four-color dots using classic screen angles.
+[presets.bold]
+style = "dots"
+cell_size = 8.0
+angle = 45.0
+contrast = 1.25
+
+[presets.classic]
+style = "dots"
+cell_size = 6.0
+dot_shape = "circle"
+angle = 45.0
+
+[presets.comic]
+style = "dots"
+cell_size = 6.0
+dot_shape = "circle"
+angle = 0.0
+color_mode = "cmyk"
+
 [presets.duotone]
 style = "dots"
 cell_size = 5.0
 color_mode = "cmyk"
 
-# Large, sparse dots for posters.
+[presets.engraving]
+style = "crosshatch"
+cell_size = 5.0
+angle = 45.0
+
+[presets.grain]
+style = "diffusion"
+cell_size = 4.0
+
+[presets.ink]
+style = "lines"
+cell_size = 6.0
+angle = 45.0
+
+[presets.newsprint]
+style = "dots"
+cell_size = 4.0
+dot_shape = "circle"
+angle = 45.0
+contrast = 1.15
+foreground = "#141414"
+
+[presets.poster]
+style = "dots"
+cell_size = 10.0
+dot_shape = "circle"
+angle = 15.0
+max_dot_scale = 1.05
+
+[presets.soft]
+style = "dots"
+cell_size = 8.0
+dot_shape = "ellipse"
+angle = 30.0
+contrast = 0.9
+brightness = 0.05
+
 [presets.sparse]
 style = "dots"
 cell_size = 14.0
 angle = 20.0
 max_dot_scale = 1.1
+
+[presets.test]
+style = "dots"
+cell_size = 5.0
+dot_shape = "circle"
+angle = 45.0
+invert = false
+contrast = 1.0
+brightness = 0.0
+gamma = 1.0
+color_mode = "cmyk"
+foreground = "#000000"
+background = "#00000000"
+max_dot_scale = 1.0
+bayer_size = 8

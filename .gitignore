@@ -16,3 +16,5 @@ config.local.toml
 .vscode
 *.swp
 .DS_Store
+
+agent_artifacts
