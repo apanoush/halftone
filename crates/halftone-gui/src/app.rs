@@ -520,11 +520,11 @@ impl Halftone {
                     self.settings.cell_size,
                     Message::CellSizeChanged
                 )
-                .step(0.5)
+                .step(0.5_f32)
             ),
             labeled(
                 "Angle",
-                slider(-180.0..=180.0, self.settings.angle, Message::AngleChanged).step(1.0)
+                slider(-180.0..=180.0, self.settings.angle, Message::AngleChanged).step(1.0_f32)
             ),
             labeled(
                 "Dot scale",
@@ -533,7 +533,7 @@ impl Halftone {
                     self.settings.max_dot_scale,
                     Message::MaxDotScaleChanged
                 )
-                .step(0.05)
+                .step(0.05_f32)
             ),
         ]
         .spacing(8);
@@ -556,7 +556,8 @@ impl Halftone {
             column![
                 labeled(
                     "Contrast",
-                    slider(0.2..=2.5, self.settings.contrast, Message::ContrastChanged).step(0.05)
+                    slider(0.2..=2.5, self.settings.contrast, Message::ContrastChanged)
+                        .step(0.05_f32)
                 ),
                 labeled(
                     "Brightness",
@@ -565,11 +566,11 @@ impl Halftone {
                         self.settings.brightness,
                         Message::BrightnessChanged
                     )
-                    .step(0.01)
+                    .step(0.01_f32)
                 ),
                 labeled(
                     "Gamma",
-                    slider(0.3..=3.0, self.settings.gamma, Message::GammaChanged).step(0.05)
+                    slider(0.3..=3.0, self.settings.gamma, Message::GammaChanged).step(0.05_f32)
                 ),
                 checkbox(self.settings.invert)
                     .label("Invert source")
@@ -629,7 +630,7 @@ impl Halftone {
                             self.camera.rotation[0],
                             Message::RotXChanged
                         )
-                        .step(1.0)
+                        .step(1.0_f32)
                     ),
                     labeled(
                         "Rotate Y",
@@ -638,7 +639,7 @@ impl Halftone {
                             self.camera.rotation[1],
                             Message::RotYChanged
                         )
-                        .step(1.0)
+                        .step(1.0_f32)
                     ),
                     labeled(
                         "Rotate Z",
@@ -647,19 +648,20 @@ impl Halftone {
                             self.camera.rotation[2],
                             Message::RotZChanged
                         )
-                        .step(1.0)
+                        .step(1.0_f32)
                     ),
                     labeled(
                         "Zoom",
-                        slider(0.2..=3.0, self.camera.zoom, Message::ZoomChanged).step(0.05)
+                        slider(0.2..=3.0, self.camera.zoom, Message::ZoomChanged).step(0.05_f32)
                     ),
                     labeled(
                         "Ambient",
-                        slider(0.0..=1.0, self.camera.ambient, Message::AmbientChanged).step(0.02)
+                        slider(0.0..=1.0, self.camera.ambient, Message::AmbientChanged)
+                            .step(0.02_f32)
                     ),
                     labeled(
                         "FOV",
-                        slider(20.0..=90.0, self.camera.fov, Message::FovChanged).step(1.0)
+                        slider(20.0..=90.0, self.camera.fov, Message::FovChanged).step(1.0_f32)
                     ),
                 ]
                 .spacing(8)
@@ -722,7 +724,7 @@ fn canvas_style(_theme: &Theme) -> container::Style {
         border: iced::Border {
             color: Color::from_rgb(0.2, 0.2, 0.24),
             width: 1.0,
-            radius: 6.0.into(),
+            radius: 6.0_f32.into(),
         },
         ..container::Style::default()
     }
