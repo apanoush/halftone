@@ -57,7 +57,7 @@ struct CommonArgs {
     /// Preset name. Defaults to the config's `default_preset`.
     #[arg(long)]
     preset: Option<String>,
-    /// Config file. Defaults to `./config.toml` when it exists.
+    /// Config file. Replaces the user and project configs.
     #[arg(long, value_name = "PATH")]
     config: Option<PathBuf>,
     /// Output width in pixels.
@@ -216,21 +216,27 @@ struct PresetArgs {
 enum PresetCommand {
     /// List available presets.
     List {
-        /// Config file.
+        /// Config file. Replaces the user and project configs.
         #[arg(long, value_name = "PATH")]
         config: Option<PathBuf>,
     },
     /// Print one preset as TOML.
     Show {
         name: String,
-        /// Config file.
+        /// Config file. Replaces the user and project configs.
+        #[arg(long, value_name = "PATH")]
+        config: Option<PathBuf>,
+    },
+    /// Print where configuration is loaded from and saved to.
+    Path {
+        /// Config file that overrides the default save location.
         #[arg(long, value_name = "PATH")]
         config: Option<PathBuf>,
     },
     /// Save settings as a preset.
     Save {
         name: String,
-        /// Config file to write. Defaults to `./config.toml`.
+        /// Config file to write. Defaults to the user config.
         #[arg(long, value_name = "PATH")]
         config: Option<PathBuf>,
         /// Base preset to copy before applying overrides.
@@ -325,7 +331,7 @@ fn run_mesh(args: MeshArgs) -> Result<()> {
 fn run_preset(args: PresetArgs) -> Result<()> {
     match args.command {
         PresetCommand::List { config: path } => {
-            let cfg = config::load(config::discover(path.as_deref()).as_deref())?;
+            let cfg = config::load(path.as_deref())?;
             for name in cfg.preset_names() {
                 let marker = if name == cfg.default_preset { " *" } else { "" };
                 println!("{name}{marker}");
@@ -333,12 +339,25 @@ fn run_preset(args: PresetArgs) -> Result<()> {
             Ok(())
         }
         PresetCommand::Show { name, config: path } => {
-            let cfg = config::load(config::discover(path.as_deref()).as_deref())?;
+            let cfg = config::load(path.as_deref())?;
             let patch = cfg
                 .presets
                 .get(&name)
                 .ok_or_else(|| anyhow!("unknown preset '{name}'"))?;
             print!("{}", config::describe_patch(patch)?);
+            Ok(())
+        }
+        PresetCommand::Path { config: path } => {
+            let target = config::save_target(path.as_deref())?;
+            println!(
+                "user config:    {}",
+                path_label(config::user_config_path().as_deref())
+            );
+            println!(
+                "project config: {}",
+                path_label(config::project_config_path().as_deref())
+            );
+            println!("save target:    {}", target.display());
             Ok(())
         }
         PresetCommand::Save {
@@ -347,24 +366,30 @@ fn run_preset(args: PresetArgs) -> Result<()> {
             preset,
             overrides,
         } => {
-            let path = path.unwrap_or_else(|| PathBuf::from("config.toml"));
-            let cfg = config::load(config::discover(Some(&path)).as_deref())?;
+            let target = config::save_target(path.as_deref())?;
+            let cfg = config::load_for_save(path.as_deref())?;
             let base_name = preset.unwrap_or_else(|| cfg.default_preset.clone());
             let mut settings = cfg
                 .resolve(&base_name)
                 .ok_or_else(|| anyhow!("unknown base preset '{base_name}'"))?;
             overrides.apply(&mut settings);
             settings.validate().map_err(|e| anyhow!(e))?;
-            config::save_preset(&path, &name, &settings)?;
-            println!("saved preset '{name}' to {}", path.display());
+            config::save_preset(&target, &name, &settings)?;
+            println!("saved preset '{name}' to {}", target.display());
             Ok(())
         }
     }
 }
 
+fn path_label(path: Option<&Path>) -> String {
+    match path {
+        Some(path) => path.display().to_string(),
+        None => "<none>".to_string(),
+    }
+}
+
 fn resolve_settings(common: &CommonArgs) -> Result<HalftoneSettings> {
-    let path = config::discover(common.config.as_deref());
-    let cfg: AppConfig = config::load(path.as_deref())?;
+    let cfg: AppConfig = config::load(common.config.as_deref())?;
     let name = common
         .preset
         .clone()

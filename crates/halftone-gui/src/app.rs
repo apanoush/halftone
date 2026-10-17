@@ -96,14 +96,27 @@ pub struct Halftone {
     background_text: String,
     width_text: String,
     height_text: String,
+    config_path: Option<PathBuf>,
     status: String,
     error: Option<String>,
 }
 
 impl Halftone {
     pub fn new() -> Self {
-        let config = config::load(config::discover(None).as_deref())
-            .unwrap_or_else(|_| AppConfig::default());
+        match config::load(None) {
+            Ok(config) => Self::from_config(config),
+            Err(error) => {
+                let mut app = Self::from_config(AppConfig::default());
+                app.error = Some(error.to_string());
+                app
+            }
+        }
+    }
+
+    /// Build the application around a specific configuration.
+    ///
+    /// Used by tests so they do not depend on the ambient user config.
+    pub fn from_config(config: AppConfig) -> Self {
         let settings = config.resolve(&config.default_preset).unwrap_or_default();
         let presets = config
             .preset_names()
@@ -127,6 +140,7 @@ impl Halftone {
             background_text: String::new(),
             width_text: String::new(),
             height_text: String::new(),
+            config_path: config::user_config_path(),
             status: String::from("Open an image or an OBJ mesh to begin."),
             error: None,
         };
@@ -359,10 +373,16 @@ impl Halftone {
             self.error = Some("Enter a preset name before saving.".to_string());
             return;
         }
-        let path = config::discover(None).unwrap_or_else(|| PathBuf::from("config.toml"));
-        match config::save_preset(&path, &name, &self.settings) {
+        let target = match config::save_target(None) {
+            Ok(path) => path,
+            Err(error) => {
+                self.error = Some(error.to_string());
+                return;
+            }
+        };
+        match config::save_preset(&target, &name, &self.settings) {
             Ok(()) => {
-                self.config = config::load(Some(&path)).unwrap_or_default();
+                self.config = config::load(None).unwrap_or_default();
                 self.presets = self
                     .config
                     .preset_names()
@@ -371,7 +391,7 @@ impl Halftone {
                     .collect();
                 self.preset_name = Some(name.clone());
                 self.preset_field.clear();
-                self.status = format!("saved preset '{name}' to {}", path.display());
+                self.status = format!("saved preset '{name}' to {}", target.display());
                 self.error = None;
             }
             Err(error) => self.error = Some(error.to_string()),
@@ -420,7 +440,17 @@ impl Halftone {
             Some(error) => text(format!("Error: {error}")).color(Color::from_rgb(1.0, 0.45, 0.45)),
             None => text(self.status.as_str()),
         };
-        container(message).width(Length::Fill).into()
+        let config_line = match &self.config_path {
+            Some(path) => format!("config: {}", path.display()),
+            None => String::from("config: built-ins only"),
+        };
+        container(
+            column![message, text(config_line).size(12)]
+                .spacing(2)
+                .width(Length::Fill),
+        )
+        .width(Length::Fill)
+        .into()
     }
 
     fn sidebar(&self) -> Element<'_, Message> {
@@ -759,7 +789,7 @@ mod tests {
 
     #[test]
     fn changing_settings_regenerates_preview() {
-        let mut app = Halftone::new();
+        let mut app = Halftone::from_config(AppConfig::default());
         app.source = SourceKind::Image(solid(0, 32));
         let _ = app.update(Message::CellSizeChanged(8.0));
         assert!(app.preview.is_some());
@@ -769,7 +799,7 @@ mod tests {
 
     #[test]
     fn selecting_a_preset_updates_settings() {
-        let mut app = Halftone::new();
+        let mut app = Halftone::from_config(AppConfig::default());
         app.source = SourceKind::Image(solid(120, 32));
         let _ = app.update(Message::PresetSelected("ink".to_string()));
         assert_eq!(app.settings.style, HalftoneStyle::Lines);
@@ -778,7 +808,7 @@ mod tests {
 
     #[test]
     fn invalid_color_text_keeps_previous_value() {
-        let mut app = Halftone::new();
+        let mut app = Halftone::from_config(AppConfig::default());
         let before = app.settings.foreground;
         let _ = app.update(Message::ForegroundChanged("nope".to_string()));
         assert_eq!(app.settings.foreground, before);
@@ -788,7 +818,7 @@ mod tests {
 
     #[test]
     fn dragging_rotates_only_meshes() {
-        let mut app = Halftone::new();
+        let mut app = Halftone::from_config(AppConfig::default());
         app.source = SourceKind::Image(solid(255, 8));
         let _ = app.update(Message::PreviewPressed);
         assert!(!app.dragging);

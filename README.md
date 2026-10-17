@@ -85,9 +85,18 @@ full-resolution result.
 
 ## Configuration
 
-`config.toml` at the working directory sets the default preset and adds custom
-presets. Presets are applied field by field over the built-in defaults, so a
-preset only needs to list what differs:
+Configuration is layered. From lowest to highest precedence:
+
+1. Built-in presets, compiled into the tool.
+2. The user config:
+   - Linux: `$XDG_CONFIG_HOME/halftone/config.toml`, usually `~/.config/halftone/config.toml`
+   - macOS: `~/Library/Application Support/halftone/config.toml`
+   - Windows: `%APPDATA%\halftone\config\config.toml`
+3. The project config, `./config.toml`, when present.
+
+Later layers win, so a project can override your personal defaults. A preset is
+applied field by field over the built-in defaults, so it only lists what
+differs:
 
 ```toml
 default_preset = "classic"
@@ -100,7 +109,11 @@ foreground = "#1b4f9c"
 ```
 
 Colors are hex strings (`#rrggbb` or `#rrggbbaa`, and `none` for transparent).
-Use `--config PATH` to point at another file.
+
+- `halftone preset path` prints the config locations in use and where saves go.
+- `halftone preset save NAME` writes to the user config by default.
+- `--config PATH` uses only the built-ins and that file, ignoring the user and
+  project configs. A missing explicit file is an error.
 
 ## Development
 

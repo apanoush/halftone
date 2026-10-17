@@ -64,6 +64,13 @@ circles are emitted as rotated polygons. See
 ## Configuration
 
 `AppConfig` holds a default preset name and a map of `SettingsPatch`. A patch
-only lists the fields that differ from `HalftoneSettings::default`, so
-`config.toml` stays readable. Built-in presets are compiled in and a file's
-presets are merged over them by name.
+only lists the fields that differ from `HalftoneSettings::default`, so config
+files stay readable.
+
+Locations are resolved by `config`: built-in presets first, then the user config
+from `ProjectDirs` (`~/.config/halftone/config.toml` on Linux), then the project
+`./config.toml`. `load_from_paths` applies them in order, so a project can
+override personal defaults. An explicit `--config` path replaces the user and
+project layers, while `save_target` selects the user config for writes unless an
+explicit path is given. See
+[decisions/0004](decisions/0004-config-locations.md).

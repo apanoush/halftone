@@ -7,6 +7,7 @@ license.workspace = true
 description = "Halftone conversion engine: images and 3D meshes to vector SVG"
 
 [dependencies]
+directories.workspace = true
 glam.workspace = true
 image.workspace = true
 rayon.workspace = true
