@@ -19,3 +19,7 @@ config.local.toml
 .DS_Store
 
 agent_artifacts
+
+# Python bytecode
+__pycache__/
+*.pyc
