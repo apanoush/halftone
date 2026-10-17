@@ -6,6 +6,7 @@
 /results/*
 !/results/.gitkeep
 /data/private
+/site
 
 # Local configuration and secrets
 .env

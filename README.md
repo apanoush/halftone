@@ -30,7 +30,7 @@ without pixelation and can be edited, printed or plotted.
 | `crates/halftone-cli` | `halftone`, the command line interface |
 | `crates/halftone-gui` | `halftone-gui`, the iced desktop interface |
 
-See `doc/index.md` for the documentation index and `doc/architecture.md` for the
+See `docs/index.md` for the documentation index and `docs/architecture.md` for the
 design.
 
 ## Build
@@ -150,5 +150,20 @@ cargo test --workspace
 
 CI (`.github/workflows/ci.yml`) runs these and a build of both binaries on
 Linux, Windows and macOS for every push and pull request.
+
+## Website
+
+The project site is generated into `site/` from `README.md`, the latest GitHub
+release, and the mdBook documentation in `docs/`:
+
+```sh
+pip install -r website/requirements.txt
+python3 scripts/build_site.py
+```
+
+It needs `mdbook` and the Python `Markdown` package. GitHub Pages deployment is
+handled by `.github/workflows/deploy-pages.yml` on every push to `master`, on a
+published release, and on manual dispatch. Enable it once under repository
+Settings, Pages, Source: GitHub Actions.
 
 Sample inputs live in `data/` and generated output goes to `results/`.

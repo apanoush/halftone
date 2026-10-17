@@ -5,7 +5,7 @@ Halftone converts images and 3D OBJ meshes into vector halftone SVG.
 ## Overview
 
 - [Architecture](architecture.md): the rendering pipeline and crate layout.
-- [Decisions](decisions/): records of significant design choices.
+- [Decisions](decisions/0001-software-rasterizer.md): records of significant design choices.
   - [0001 Software rasterizer](decisions/0001-software-rasterizer.md)
   - [0002 Hand-written SVG writer](decisions/0002-hand-written-svg-writer.md)
   - [0003 Pixel-based canvas for v1](decisions/0003-pixel-based-canvas.md)

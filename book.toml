@@ -1,0 +1,14 @@
+[book]
+title = "Halftone"
+src = "docs"
+authors = ["Anoush A-P"]
+
+[build]
+build-dir = "site/docs"
+create-missing = false
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/apanoush/halftone"
+edit-url-template = "https://github.com/apanoush/halftone/edit/master/docs/{path}"
