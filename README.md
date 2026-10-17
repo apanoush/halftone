@@ -42,6 +42,31 @@ cargo build --release
 Binaries are written to `target/release/halftone` and
 `target/release/halftone-gui`.
 
+## Platforms
+
+Halftone runs on Linux, Windows and macOS. The engine and CLI have no platform
+specific code; the GUI uses iced, which renders with wgpu (Vulkan, Metal or
+DirectX 12) and falls back to the tiny-skia software renderer when no GPU
+adapter is available.
+
+| | Status |
+| --- | --- |
+| Linux | Built and run locally, and covered by CI. Config at `$XDG_CONFIG_HOME/halftone/config.toml`. |
+| Windows | Covered by CI. Config at `%APPDATA%\halftone\config\config.toml`. |
+| macOS | Covered by CI. Config at `~/Library/Application Support/halftone/config.toml`. |
+
+Requirements:
+
+- Rust 1.85 or newer (the workspace uses the 2024 edition).
+- Windows: the MSVC toolchain.
+- macOS: the Xcode Command Line Tools.
+- Linux: a desktop session for the GUI. File dialogs use the XDG desktop
+  portal, so an `xdg-desktop-portal` service must be running (it is present on
+  GNOME and KDE by default).
+
+Continuous integration builds, lints, and tests the workspace on all three
+operating systems.
+
 ## Command line
 
 Convert an image:
@@ -119,8 +144,11 @@ Colors are hex strings (`#rrggbb` or `#rrggbbaa`, and `none` for transparent).
 
 ```sh
 cargo fmt --all
-cargo clippy --workspace --all-targets
+cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 ```
+
+CI (`.github/workflows/ci.yml`) runs these and a build of both binaries on
+Linux, Windows and macOS for every push and pull request.
 
 Sample inputs live in `data/` and generated output goes to `results/`.
