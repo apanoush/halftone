@@ -12,3 +12,6 @@ path = "src/main.rs"
 
 [dependencies]
 halftone-core.workspace = true
+iced = { workspace = true, features = ["image"] }
+resvg.workspace = true
+rfd.workspace = true
